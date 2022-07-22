@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/IgorKravtsov/esport_server_go/internal/server"
+	"github.com/joho/godotenv"
 	"net/http"
 	"os"
 	"os/signal"
@@ -41,13 +42,16 @@ import (
 
 // Run initializes whole application.
 func Run(configPath string) {
+	if err := godotenv.Load(); err != nil {
+		logger.Errorf("error loading env variables: %s", err.Error())
+	}
+
 	cfg, err := config.Init(configPath)
 	if err != nil {
 		logger.Error(err)
 
 		return
 	}
-	logger.Warnf("Mongo url: %s", os.Getenv("APP_ENV"))
 
 	// Dependencies
 	mongoClient, err := mongodb.NewClient(cfg.Mongo.URI, cfg.Mongo.User, cfg.Mongo.Password)
