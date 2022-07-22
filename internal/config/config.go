@@ -103,3 +103,69 @@ func populateDefaults() {
   //viper.SetDefault("limiter.burst", defaultLimiterBurst)
   //viper.SetDefault("limiter.ttl", defaultLimiterTTL)
 }
+
+func unmarshal(cfg *Config) error {
+  //if err := viper.UnmarshalKey("cache.ttl", &cfg.CacheTTL); err != nil {
+  //  return err
+  //}
+  
+  if err := viper.UnmarshalKey("mongo", &cfg.Mongo); err != nil {
+    return err
+  }
+  
+  if err := viper.UnmarshalKey("http", &cfg.HTTP); err != nil {
+    return err
+  }
+  
+  if err := viper.UnmarshalKey("auth", &cfg.Auth.JWT); err != nil {
+    return err
+  }
+  
+  return viper.UnmarshalKey("auth.verificationCodeLength", &cfg.Auth.VerificationCodeLength)
+  
+  //if err := viper.UnmarshalKey("fileStorage", &cfg.FileStorage); err != nil {
+  //  return err
+  //}
+  //
+  //if err := viper.UnmarshalKey("limiter", &cfg.Limiter); err != nil {
+  //  return err
+  //}
+  //
+  //if err := viper.UnmarshalKey("smtp", &cfg.SMTP); err != nil {
+  //  return err
+  //}
+  //
+  //if err := viper.UnmarshalKey("email.templates", &cfg.Email.Templates); err != nil {
+  //  return err
+  //}
+  //
+  //return viper.UnmarshalKey("email.subjects", &cfg.Email.Subjects)
+}
+
+func setFromEnv(cfg *Config) {
+  // TODO use envconfig https://github.com/kelseyhightower/envconfig
+  cfg.Mongo.URI = os.Getenv("MONGO_URI")
+  cfg.Mongo.User = os.Getenv("MONGO_USER")
+  cfg.Mongo.Password = os.Getenv("MONGO_PASS")
+  
+  cfg.Auth.PasswordSalt = os.Getenv("PASSWORD_SALT")
+  cfg.Auth.JWT.SigningKey = os.Getenv("JWT_SIGNING_KEY")
+  
+  cfg.HTTP.Host = os.Getenv("HTTP_HOST")
+  
+  //cfg.Payment.FondyCallbackURL = os.Getenv("FONDY_CALLBACK_URL")
+  //
+  //cfg.SMTP.Pass = os.Getenv("SMTP_PASSWORD")
+  
+  cfg.Environment = os.Getenv("APP_ENV")
+  
+  //cfg.FileStorage.Endpoint = os.Getenv("STORAGE_ENDPOINT")
+  //cfg.FileStorage.AccessKey = os.Getenv("STORAGE_ACCESS_KEY")
+  //cfg.FileStorage.SecretKey = os.Getenv("STORAGE_SECRET_KEY")
+  //cfg.FileStorage.Bucket = os.Getenv("STORAGE_BUCKET")
+  //
+  //cfg.Cloudflare.ApiKey = os.Getenv("CLOUDFLARE_API_KEY")
+  //cfg.Cloudflare.Email = os.Getenv("CLOUDFLARE_EMAIL")
+  //cfg.Cloudflare.ZoneEmail = os.Getenv("CLOUDFLARE_ZONE_EMAIL")
+  //cfg.Cloudflare.CnameTarget = os.Getenv("CLOUDFLARE_CNAME_TARGET")
+}

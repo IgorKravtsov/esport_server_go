@@ -1,6 +1,7 @@
 package app
 
 import (
+  "backend/internal/config"
   "backend/pkg/auth"
   "backend/pkg/database/mongodb"
   "backend/pkg/logger"
