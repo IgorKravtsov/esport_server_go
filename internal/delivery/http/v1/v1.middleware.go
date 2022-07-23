@@ -10,6 +10,8 @@ import (
 
 const (
 	userCtx             = "userId"
+	adminCtx            = "adminId"
+	trainerCtx          = "trainerId"
 	authorizationHeader = "Authorization"
 	domainCtx           = "domain"
 )
@@ -55,26 +57,34 @@ func (h *Handler) userIdentity(c *gin.Context) {
 	c.Set(userCtx, id)
 }
 
-//func (h *Handler) studentIdentity(c *gin.Context) {
-//  id, err := h.parseAuthHeader(c)
-//  if err != nil {
-//    newResponse(c, http.StatusUnauthorized, err.Error())
-//  }
-//
-//  c.Set(studentCtx, id)
-//}
-//
-//func (h *Handler) adminIdentity(c *gin.Context) {
-//  id, err := h.parseAuthHeader(c)
-//  if err != nil {
-//    newResponse(c, http.StatusUnauthorized, err.Error())
-//  }
-//
-//  c.Set(adminCtx, id)
-//}
+func (h *Handler) trainerIdentity(c *gin.Context) {
+	id, err := h.parseAuthHeader(c)
+	if err != nil {
+		newResponse(c, http.StatusUnauthorized, err.Error())
+	}
+
+	c.Set(trainerCtx, id)
+}
+
+func (h *Handler) adminIdentity(c *gin.Context) {
+	id, err := h.parseAuthHeader(c)
+	if err != nil {
+		newResponse(c, http.StatusUnauthorized, err.Error())
+	}
+
+	c.Set(adminCtx, id)
+}
 
 func getUserId(c *gin.Context) (primitive.ObjectID, error) {
 	return getIdByContext(c, userCtx)
+}
+
+func getTrainerId(c *gin.Context) (primitive.ObjectID, error) {
+	return getIdByContext(c, trainerCtx)
+}
+
+func getAdminId(c *gin.Context) (primitive.ObjectID, error) {
+	return getIdByContext(c, adminCtx)
 }
 
 func getIdByContext(c *gin.Context, context string) (primitive.ObjectID, error) {

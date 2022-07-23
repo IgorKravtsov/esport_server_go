@@ -3,8 +3,6 @@ package app
 import (
 	"context"
 	"errors"
-	"github.com/IgorKravtsov/esport_server_go/internal/server"
-	"github.com/IgorKravtsov/esport_server_go/pkg/otp"
 	"github.com/joho/godotenv"
 	"net/http"
 	"os"
@@ -12,14 +10,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/IgorKravtsov/esport_server_go/internal/config"
-	delivery "github.com/IgorKravtsov/esport_server_go/internal/delivery/http"
-	"github.com/IgorKravtsov/esport_server_go/internal/repository"
-	"github.com/IgorKravtsov/esport_server_go/internal/service"
 	"github.com/IgorKravtsov/esport_server_go/pkg/auth"
 	"github.com/IgorKravtsov/esport_server_go/pkg/database/mongodb"
 	"github.com/IgorKravtsov/esport_server_go/pkg/hash"
 	"github.com/IgorKravtsov/esport_server_go/pkg/logger"
+	"github.com/IgorKravtsov/esport_server_go/pkg/otp"
+
+	"github.com/IgorKravtsov/esport_server_go/internal/config"
+	delivery "github.com/IgorKravtsov/esport_server_go/internal/delivery/http"
+	"github.com/IgorKravtsov/esport_server_go/internal/repository"
+	"github.com/IgorKravtsov/esport_server_go/internal/server"
+	"github.com/IgorKravtsov/esport_server_go/internal/service"
 )
 
 // @title eSport kit

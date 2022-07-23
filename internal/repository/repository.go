@@ -17,6 +17,7 @@ type Repositories struct {
 	//Orders         Orders
 	//Admins         Admins
 	User User
+	Gym  Gym
 	//Files         Files
 	//SurveyResults SurveyResults
 }
@@ -35,6 +36,7 @@ func NewRepositories(db *mongo.Database) *Repositories {
 		//Admins:         NewAdminsRepo(db),
 		//Packages:       NewPackagesRepo(db),
 		User: NewUserRepo(db),
+		Gym:  NewGymRepo(db),
 		//Files:          NewFilesRepo(db),
 		//SurveyResults:  NewSurveyResultsRepo(db),
 	}

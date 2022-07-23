@@ -3,15 +3,18 @@ package user
 import (
 	"context"
 	"errors"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/IgorKravtsov/esport_server_go/pkg/auth"
+	"github.com/IgorKravtsov/esport_server_go/pkg/hash"
+	"github.com/IgorKravtsov/esport_server_go/pkg/otp"
+
 	"github.com/IgorKravtsov/esport_server_go/internal/domain"
 	"github.com/IgorKravtsov/esport_server_go/internal/repository"
 	"github.com/IgorKravtsov/esport_server_go/internal/service/tokens"
 	"github.com/IgorKravtsov/esport_server_go/internal/service/user/dto"
-	"github.com/IgorKravtsov/esport_server_go/pkg/auth"
-	"github.com/IgorKravtsov/esport_server_go/pkg/hash"
-	"github.com/IgorKravtsov/esport_server_go/pkg/otp"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"time"
 )
 
 type User interface {
@@ -29,8 +32,7 @@ type Service struct {
 	accessTokenTTL         time.Duration
 	refreshTokenTTL        time.Duration
 	verificationCodeLength int
-
-	domain string
+	domain                 string
 	//dnsService   dns.DomainManager
 	//
 	//emailService  Emails
