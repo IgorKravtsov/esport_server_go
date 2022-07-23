@@ -16,3 +16,7 @@ var (
 	//ErrSendPulseIsNotConnected = errors.New("sendpulse is not connected")
 	//ErrStudentBlocked          = errors.New("student is blocked by the admin")
 )
+
+func ErrorAlreadyExitsts(model string) error {
+	return errors.New(model + " already exists")
+}

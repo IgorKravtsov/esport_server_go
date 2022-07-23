@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/IgorKravtsov/esport_server_go/internal/repository"
+	"github.com/IgorKravtsov/esport_server_go/internal/service/gym"
 	"github.com/IgorKravtsov/esport_server_go/internal/service/user"
 	"github.com/IgorKravtsov/esport_server_go/pkg/auth"
 	"github.com/IgorKravtsov/esport_server_go/pkg/hash"
@@ -24,6 +25,7 @@ type Services struct {
 	//Admins         Admins
 	//Files          Files
 	User user.User
+	Gym  gym.Gym
 	//Surveys        Surveys
 }
 
@@ -61,6 +63,7 @@ func NewServices(deps Deps) *Services {
 	//ordersService := NewOrdersService(deps.Repos.Orders, offersService, promoCodesService, studentsService)
 	userService := user.NewUserService(deps.Repos.User, deps.Hasher, deps.TokenManager,
 		deps.AccessTokenTTL, deps.RefreshTokenTTL, deps.VerificationCodeLength, deps.Domain, deps.OtpGenerator)
+	gymService := gym.NewGymService(deps.Repos.Gym, deps.Domain)
 
 	return &Services{
 		//Schools:        schoolsService,
@@ -79,6 +82,7 @@ func NewServices(deps Deps) *Services {
 		//Lessons:  lessonsService,
 		//Files:    NewFilesService(deps.Repos.Files, deps.StorageProvider, deps.Environment),
 		User: userService,
+		Gym:  gymService,
 		//Surveys:  NewSurveysService(deps.Repos.Modules, deps.Repos.SurveyResults, deps.Repos.Students),
 	}
 }
