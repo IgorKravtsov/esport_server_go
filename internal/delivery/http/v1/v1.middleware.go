@@ -47,7 +47,7 @@ func (h *Handler) parseAuthHeader(c *gin.Context) (string, error) {
 	return h.tokenManager.Parse(headerParts[1])
 }
 
-func (h *Handler) userIdentity(c *gin.Context) {
+func (h *Handler) authIdentity(c *gin.Context) {
 	id, err := h.parseAuthHeader(c)
 	if err != nil {
 		newResponse(c, http.StatusUnauthorized, err.Error())

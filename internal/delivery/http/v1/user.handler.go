@@ -15,7 +15,7 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 		users.POST("/login", h.login)
 		users.POST("/refresh-tokens", h.userRefresh)
 
-		authenticated := users.Group("/", h.userIdentity)
+		authenticated := users.Group("/", h.authIdentity)
 		{
 			authenticated.POST("/verify/:code", h.userVerify)
 		}
