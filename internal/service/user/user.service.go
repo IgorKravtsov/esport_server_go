@@ -5,8 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
 	"github.com/IgorKravtsov/esport_server_go/pkg/auth"
 	"github.com/IgorKravtsov/esport_server_go/pkg/hash"
 	"github.com/IgorKravtsov/esport_server_go/pkg/otp"
@@ -21,7 +19,8 @@ type User interface {
 	Register(ctx context.Context, input dto.UserRegister) error
 	Login(ctx context.Context, input dto.UserLogin) (tokens.Tokens, error)
 	RefreshTokens(ctx context.Context, refreshToken string) (tokens.Tokens, error)
-	Verify(ctx context.Context, userID primitive.ObjectID, hash string) error
+	Verify(ctx context.Context, userID string, hash string) error
+	GetByEmail(ctx context.Context, email string) (*domain.User, error)
 }
 
 type Service struct {
@@ -124,7 +123,7 @@ func (s *Service) RefreshTokens(ctx context.Context, refreshToken string) (token
 	return s.createSession(ctx, user.ID)
 }
 
-func (s *Service) Verify(ctx context.Context, userID primitive.ObjectID, hash string) error {
+func (s *Service) Verify(ctx context.Context, userID string, hash string) error {
 	err := s.repo.Verify(ctx, userID, hash)
 	if err != nil {
 		if errors.Is(err, domain.ErrVerificationCodeInvalid) {
@@ -137,13 +136,13 @@ func (s *Service) Verify(ctx context.Context, userID primitive.ObjectID, hash st
 	return nil
 }
 
-func (s *Service) createSession(ctx context.Context, userId primitive.ObjectID) (tokens.Tokens, error) {
+func (s *Service) createSession(ctx context.Context, userId string) (tokens.Tokens, error) {
 	var (
 		res tokens.Tokens
 		err error
 	)
 
-	res.AccessToken, err = s.tokenManager.NewJWT(userId.Hex(), s.accessTokenTTL)
+	res.AccessToken, err = s.tokenManager.NewJWT(userId, s.accessTokenTTL)
 	if err != nil {
 		return res, err
 	}
@@ -161,4 +160,8 @@ func (s *Service) createSession(ctx context.Context, userId primitive.ObjectID) 
 	err = s.repo.SetSession(ctx, userId, session)
 
 	return res, err
+}
+
+func (s *Service) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
+	return s.repo.GetByEmail(ctx, email)
 }

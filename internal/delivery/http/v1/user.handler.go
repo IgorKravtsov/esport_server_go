@@ -13,7 +13,7 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	{
 		users.POST("/register", h.register)
 		users.POST("/login", h.login)
-		users.POST("/auth/refresh-tokens", h.userRefresh)
+		users.POST("/refresh-tokens", h.userRefresh)
 
 		authenticated := users.Group("/", h.userIdentity)
 		{
@@ -38,6 +38,12 @@ func (h *Handler) register(c *gin.Context) {
 	var inp dto.UserRegister
 	if err := c.BindJSON(&inp); err != nil {
 		newResponse(c, http.StatusBadRequest, "Invalid input body")
+		return
+	}
+	foundUser, _ := h.services.User.GetByEmail(c.Request.Context(), inp.Email)
+
+	if foundUser != nil {
+		newResponse(c, http.StatusBadRequest, "User with this email already exists")
 		return
 	}
 

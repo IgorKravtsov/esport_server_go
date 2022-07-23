@@ -1,6 +1,8 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"time"
+)
 
 type TrainingType string
 
@@ -10,8 +12,8 @@ const (
 )
 
 type Training struct {
-	ID               primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	TrainingDateTime primitive.DateTime `json:"trainingDateTime" bson:"trainingDateTime"`
-	TrainingType     TrainingType       `json:"training_type" bson:"training_type"`
-	GymID            primitive.ObjectID `json:"gym_id" bson:"gym_id"`
+	ID               string       `json:"id" bson:"_id,omitempty"`
+	TrainingDateTime time.Time    `json:"trainingDateTime" bson:"trainingDateTime"`
+	TrainingType     TrainingType `json:"training_type" bson:"training_type"`
+	GymID            string       `json:"gym_id" bson:"gym_id"`
 }

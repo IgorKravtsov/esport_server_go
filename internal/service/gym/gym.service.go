@@ -2,7 +2,7 @@ package gym
 
 import (
 	"context"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 
 	"github.com/IgorKravtsov/esport_server_go/internal/domain"
 	"github.com/IgorKravtsov/esport_server_go/internal/repository"
@@ -10,7 +10,7 @@ import (
 )
 
 type Gym interface {
-	Create(ctx context.Context, input dto.CreateGym, creatorID primitive.ObjectID) error
+	Create(ctx context.Context, input dto.CreateGym, creatorID string) error
 }
 
 type Service struct {
@@ -26,10 +26,12 @@ func NewGymService(
 	}
 }
 
-func (s Service) Create(ctx context.Context, input dto.CreateGym, creatorID primitive.ObjectID) error {
+func (s Service) Create(ctx context.Context, input dto.CreateGym, creatorID string) error {
 	gym := domain.Gym{
-		Title:   input.Title,
-		Address: input.Address,
+		Title:     input.Title,
+		Address:   input.Address,
+		CreatedBy: creatorID,
+		CreatedAt: time.Now(),
 	}
 	if err := s.repo.Create(ctx, gym); err != nil {
 		return err

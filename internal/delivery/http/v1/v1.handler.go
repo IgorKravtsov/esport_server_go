@@ -5,7 +5,6 @@ import (
 	"github.com/IgorKravtsov/esport_server_go/internal/service"
 	"github.com/IgorKravtsov/esport_server_go/pkg/auth"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Handler struct {
@@ -32,16 +31,11 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 	}
 }
 
-func parseIdFromPath(c *gin.Context, param string) (primitive.ObjectID, error) {
+func parseIdFromPath(c *gin.Context, param string) (string, error) {
 	idParam := c.Param(param)
 	if idParam == "" {
-		return primitive.ObjectID{}, errors.New("empty id param")
+		return "", errors.New("empty id param")
 	}
 
-	id, err := primitive.ObjectIDFromHex(idParam)
-	if err != nil {
-		return primitive.ObjectID{}, errors.New("invalid id param")
-	}
-
-	return id, nil
+	return idParam, nil
 }
