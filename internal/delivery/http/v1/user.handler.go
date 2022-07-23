@@ -12,6 +12,7 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	users := api.Group("/user")
 	{
 		users.POST("/register", h.register)
+		users.POST("/login", h.login)
 
 		authenticated := users.Group("/", h.userIdentity)
 		{
@@ -20,26 +21,36 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	}
 }
 
-type userRegisterInput struct {
+type registerInput struct {
 	Name     string `json:"name" binding:"required,min=1,max=64"`
+	Email    string `json:"email" binding:"required,email,max=63"`
+	Password string `json:"password" binding:"required,min=1,max=64"`
+}
+
+type loginInput struct {
 	Email    string `json:"email" binding:"required,email,max=64"`
 	Password string `json:"password" binding:"required,min=1,max=64"`
 }
 
-// @Summary User SignUp
-// @Tags users-auth
+type tokenResponse struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+}
+
+// @Summary User Register
+// @Tags auth
 // @Description create user account
 // @ModuleID register
 // @Accept  json
 // @Produce  json
-// @Param input body userRegisterInput true "sign up info"
+// @Param input body registerInput true "register info"
 // @Success 201 {string} string "ok"
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /users/register [post]
+// @Router /api/v1/user/register [post]
 func (h *Handler) register(c *gin.Context) {
-	var inp userRegisterInput
+	var inp registerInput
 	if err := c.BindJSON(&inp); err != nil {
 		newResponse(c, http.StatusBadRequest, "Invalid input body")
 		return
@@ -62,9 +73,51 @@ func (h *Handler) register(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
+// @Summary Learner Login
+// @Tags auth
+// @Description user sign in
+// @ModuleID login
+// @Accept  json
+// @Produce  json
+// @Param input body loginInput true "login info"
+// @Success 200 {object} tokenResponse
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /api/v1/user/login [post]
+func (h *Handler) login(c *gin.Context) {
+	var inp loginInput
+	if err := c.BindJSON(&inp); err != nil {
+		newResponse(c, http.StatusBadRequest, "invalid input body")
+
+		return
+	}
+
+	res, err := h.services.Users.Login(c.Request.Context(), dto.UserLogin{
+		Email:    inp.Email,
+		Password: inp.Password,
+	})
+	if err != nil {
+		if errors.Is(err, domain.ErrUserNotFound) {
+			newResponse(c, http.StatusBadRequest, err.Error())
+
+			return
+		}
+
+		newResponse(c, http.StatusInternalServerError, err.Error())
+
+		return
+	}
+
+	c.JSON(http.StatusOK, tokenResponse{
+		AccessToken:  res.AccessToken,
+		RefreshToken: res.RefreshToken,
+	})
+}
+
 // @Summary User Verify Registration
-// @Security UsersAuth
-// @Tags users-auth
+// @Security UserAuth
+// @Tags auth
 // @Description user verify registration
 // @ModuleID userVerify
 // @Accept  json
@@ -74,7 +127,7 @@ func (h *Handler) register(c *gin.Context) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /users/verify/{code} [post]
+// @Router /api/v1/user/verify/{code} [post]
 func (h *Handler) userVerify(c *gin.Context) {
 	code := c.Param("code")
 	if code == "" {

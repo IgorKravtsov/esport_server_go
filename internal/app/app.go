@@ -21,22 +21,22 @@ import (
 	"github.com/IgorKravtsov/esport_server_go/pkg/logger"
 )
 
-// @title Creatly API
+// @title eSport kit
 // @version 1.0
-// @description REST API for Creatly App
+// @description REST API for eSport kit App
 
-// @host localhost:8000
+// @host localhost:5000
 // @BasePath /api/v1/
 
 // @securityDefinitions.apikey AdminAuth
 // @in header
 // @name Authorization
 
-// @securityDefinitions.apikey StudentsAuth
+// @securityDefinitions.apikey TrainerAuth
 // @in header
 // @name Authorization
 
-// @securityDefinitions.apikey UsersAuth
+// @securityDefinitions.apikey UserAuth
 // @in header
 // @name Authorization
 
