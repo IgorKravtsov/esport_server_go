@@ -2,6 +2,8 @@ package user
 
 import (
 	"context"
+	"errors"
+	"github.com/IgorKravtsov/esport_server_go/internal/domain"
 	"github.com/IgorKravtsov/esport_server_go/internal/repository"
 	"github.com/IgorKravtsov/esport_server_go/internal/service/tokens"
 	"github.com/IgorKravtsov/esport_server_go/internal/service/user/dto"
@@ -62,7 +64,40 @@ func NewUsersService(
 }
 
 func (s *UsersService) Register(ctx context.Context, input dto.UserRegister) error {
-	panic("implement me")
+	passwordHash, err := s.hasher.Hash(input.Password)
+	if err != nil {
+		return err
+	}
+
+	//verificationCode := s.otpGenerator.RandomSecret(s.verificationCodeLength)
+
+	user := domain.User{
+		Name:         input.Name,
+		Password:     passwordHash,
+		Email:        input.Email,
+		RegisteredAt: time.Now(),
+		LastVisitAt:  time.Now(),
+		//Verification: domain.Verification{
+		//  Code: verificationCode,
+		//},
+	}
+
+	if err = s.repo.Create(ctx, user); err != nil {
+		if errors.Is(err, domain.ErrUserAlreadyExists) {
+			return err
+		}
+
+		return err
+	}
+
+	return nil
+	// todo. DECIDE ON EMAIL MARKETING STRATEGY
+
+	//return s.emailService.SendUserVerificationEmail(VerificationEmailInput{
+	//  Email:            user.Email,
+	//  Name:             user.Name,
+	//  VerificationCode: verificationCode,
+	//})
 }
 
 func (s *UsersService) Login(ctx context.Context, input dto.UserLogin) (tokens.Tokens, error) {

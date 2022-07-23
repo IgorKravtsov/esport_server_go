@@ -9,9 +9,10 @@ import (
 )
 
 func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
-	users := api.Group("/users")
+	users := api.Group("/user")
 	{
-		users.POST("/sign-up", h.register)
+		users.POST("/register", h.register)
+		users.GET("/get", h.get)
 
 		authenticated := users.Group("/", h.userIdentity)
 		{
@@ -21,10 +22,9 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 }
 
 type userRegisterInput struct {
-	Name     string `json:"name" binding:"required,min=2,max=64"`
+	Name     string `json:"name" binding:"required,min=1,max=64"`
 	Email    string `json:"email" binding:"required,email,max=64"`
-	Phone    string `json:"phone" binding:"required,max=13"`
-	Password string `json:"password" binding:"required,min=8,max=64"`
+	Password string `json:"password" binding:"required,min=1,max=64"`
 }
 
 // @Summary User SignUp
@@ -38,11 +38,11 @@ type userRegisterInput struct {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /users/sign-up [post]
+// @Router /users/register [post]
 func (h *Handler) register(c *gin.Context) {
 	var inp userRegisterInput
 	if err := c.BindJSON(&inp); err != nil {
-		newResponse(c, http.StatusBadRequest, "invalid input body")
+		newResponse(c, http.StatusBadRequest, "Invalid input body")
 		return
 	}
 
@@ -91,7 +91,7 @@ func (h *Handler) userVerify(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Users.Verify(c.Request.Context(), id, code); err != nil {
+	if err = h.services.Users.Verify(c.Request.Context(), id, code); err != nil {
 		if errors.Is(err, domain.ErrVerificationCodeInvalid) {
 			newResponse(c, http.StatusBadRequest, err.Error())
 
@@ -103,5 +103,9 @@ func (h *Handler) userVerify(c *gin.Context) {
 		return
 	}
 
+	c.JSON(http.StatusOK, response{"success"})
+}
+
+func (h *Handler) get(c *gin.Context) {
 	c.JSON(http.StatusOK, response{"success"})
 }

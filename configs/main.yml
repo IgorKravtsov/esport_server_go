@@ -1,11 +1,11 @@
 http:
-  port: 8000
+  port: 5000
   maxHeaderBytes: 1
   readTimeout: 10s
   writeTimeout: 10s
 
 mongo:
-  databaseName: coursePlatform
+  databaseName: sport_kit
 
 auth:
   accessTokenTTL: 2h

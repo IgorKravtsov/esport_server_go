@@ -7,7 +7,6 @@ import (
 	"github.com/IgorKravtsov/esport_server_go/internal/config"
 	"github.com/IgorKravtsov/esport_server_go/internal/service"
 	"github.com/IgorKravtsov/esport_server_go/pkg/auth"
-	"github.com/IgorKravtsov/esport_server_go/pkg/limiter"
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,7 +29,7 @@ func (h *Handler) Init(cfg *config.Config) *gin.Engine {
 	router.Use(
 		gin.Recovery(),
 		gin.Logger(),
-		limiter.Limit(cfg.Limiter.RPS, cfg.Limiter.Burst, cfg.Limiter.TTL),
+		//limiter.Limit(cfg.Limiter.RPS, cfg.Limiter.Burst, cfg.Limiter.TTL),
 		corsMiddleware,
 	)
 
