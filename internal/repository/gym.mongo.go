@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/IgorKravtsov/esport_server_go/internal/domain"
+	mongodb_utils "github.com/IgorKravtsov/esport_server_go/internal/repository/mongodb-utils"
 	"github.com/IgorKravtsov/esport_server_go/pkg/database/mongodb"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -29,8 +30,12 @@ func NewGymRepo(db *mongo.Database) *GymRepo {
 	}
 }
 
-func (r *GymRepo) Create(ctx context.Context, gym domain.Gym) error {
-	_, err := r.db.InsertOne(ctx, gym)
+func (r *GymRepo) Create(ctx context.Context, g domain.Gym) error {
+	mongoGym, err := mongodb_utils.GymToRepo(g)
+	if err != nil {
+		return err
+	}
+	_, err = r.db.InsertOne(ctx, mongoGym)
 	if mongodb.IsDuplicate(err) {
 		return domain.ErrorAlreadyExitsts(gymsCollection)
 	}

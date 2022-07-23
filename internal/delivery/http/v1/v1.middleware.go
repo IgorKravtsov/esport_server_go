@@ -3,7 +3,6 @@ package v1
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"strings"
 )
@@ -75,32 +74,27 @@ func (h *Handler) adminIdentity(c *gin.Context) {
 	c.Set(adminCtx, id)
 }
 
-func getUserId(c *gin.Context) (primitive.ObjectID, error) {
+func getUserId(c *gin.Context) (string, error) {
 	return getIdByContext(c, userCtx)
 }
 
-func getTrainerId(c *gin.Context) (primitive.ObjectID, error) {
+func getTrainerId(c *gin.Context) (string, error) {
 	return getIdByContext(c, trainerCtx)
 }
 
-func getAdminId(c *gin.Context) (primitive.ObjectID, error) {
+func getAdminId(c *gin.Context) (string, error) {
 	return getIdByContext(c, adminCtx)
 }
 
-func getIdByContext(c *gin.Context, context string) (primitive.ObjectID, error) {
+func getIdByContext(c *gin.Context, context string) (string, error) {
 	idFromCtx, ok := c.Get(context)
 	if !ok {
-		return primitive.ObjectID{}, errors.New("ctx in middleware not found")
+		return "", errors.New("ctx in middleware not found")
 	}
 
-	idStr, ok := idFromCtx.(string)
+	id, ok := idFromCtx.(string)
 	if !ok {
-		return primitive.ObjectID{}, errors.New("ctx in middleware is of invalid type")
-	}
-
-	id, err := primitive.ObjectIDFromHex(idStr)
-	if err != nil {
-		return primitive.ObjectID{}, err
+		return "", errors.New("ctx in middleware is of invalid type")
 	}
 
 	return id, nil
