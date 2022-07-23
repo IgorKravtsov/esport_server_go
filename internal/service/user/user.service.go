@@ -9,46 +9,41 @@ import (
 	"github.com/IgorKravtsov/esport_server_go/internal/service/user/dto"
 	"github.com/IgorKravtsov/esport_server_go/pkg/auth"
 	"github.com/IgorKravtsov/esport_server_go/pkg/hash"
+	"github.com/IgorKravtsov/esport_server_go/pkg/otp"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
-type Users interface {
+type User interface {
 	Register(ctx context.Context, input dto.UserRegister) error
 	Login(ctx context.Context, input dto.UserLogin) (tokens.Tokens, error)
 	RefreshTokens(ctx context.Context, refreshToken string) (tokens.Tokens, error)
 	Verify(ctx context.Context, userID primitive.ObjectID, hash string) error
-	//CreateSchool(ctx context.Context, userID primitive.ObjectID, schoolName string) (domain.School, error)
 }
 
-type Dto struct {
-	Login    dto.UserLogin
-	Register dto.UserRegister
-}
-
-type UsersService struct {
-	repo         repository.User
-	hasher       hash.PasswordHasher
-	tokenManager auth.TokenManager
-	//otpGenerator otp.Generator
-	//dnsService   dns.DomainManager
-	//
-	//emailService  Emails
-	//schoolService Schools
-
+type Service struct {
+	repo                   repository.User
+	hasher                 hash.PasswordHasher
+	tokenManager           auth.TokenManager
+	otpGenerator           otp.Generator
 	accessTokenTTL         time.Duration
 	refreshTokenTTL        time.Duration
 	verificationCodeLength int
 
 	domain string
+	//dnsService   dns.DomainManager
+	//
+	//emailService  Emails
+	//schoolService Schools
+
 }
 
-func NewUsersService(
+func NewUserService(
 	repo repository.User, hasher hash.PasswordHasher,
 	tokenManager auth.TokenManager,
 	accessTTL, refreshTTL time.Duration,
-	verificationCodeLength int, domain string) *UsersService {
-	return &UsersService{
+	verificationCodeLength int, domain string, otpGenerator otp.Generator) *Service {
+	return &Service{
 		repo:                   repo,
 		hasher:                 hasher,
 		tokenManager:           tokenManager,
@@ -56,20 +51,20 @@ func NewUsersService(
 		refreshTokenTTL:        refreshTTL,
 		verificationCodeLength: verificationCodeLength,
 		domain:                 domain,
+		otpGenerator:           otpGenerator,
 		//emailService:           emailService,
 		//schoolService:          schoolsService,
-		//otpGenerator:           otpGenerator,
 		//dnsService:             dnsService,
 	}
 }
 
-func (s *UsersService) Register(ctx context.Context, input dto.UserRegister) error {
+func (s *Service) Register(ctx context.Context, input dto.UserRegister) error {
 	passwordHash, err := s.hasher.Hash(input.Password)
 	if err != nil {
 		return err
 	}
 
-	//verificationCode := s.otpGenerator.RandomSecret(s.verificationCodeLength)
+	verificationCode := s.otpGenerator.RandomSecret(s.verificationCodeLength)
 
 	user := domain.User{
 		Name:         input.Name,
@@ -77,9 +72,9 @@ func (s *UsersService) Register(ctx context.Context, input dto.UserRegister) err
 		Email:        input.Email,
 		RegisteredAt: time.Now(),
 		LastVisitAt:  time.Now(),
-		//Verification: domain.Verification{
-		//  Code: verificationCode,
-		//},
+		Verification: domain.Verification{
+			Code: verificationCode,
+		},
 	}
 
 	if err = s.repo.Create(ctx, user); err != nil {
@@ -100,14 +95,68 @@ func (s *UsersService) Register(ctx context.Context, input dto.UserRegister) err
 	//})
 }
 
-func (s *UsersService) Login(ctx context.Context, input dto.UserLogin) (tokens.Tokens, error) {
-	panic("implement me")
+func (s *Service) Login(ctx context.Context, input dto.UserLogin) (tokens.Tokens, error) {
+	passwordHash, err := s.hasher.Hash(input.Password)
+	if err != nil {
+		return tokens.Tokens{}, err
+	}
+
+	user, err := s.repo.GetByCredentials(ctx, input.Email, passwordHash)
+	if err != nil {
+		if errors.Is(err, domain.ErrUserNotFound) {
+			return tokens.Tokens{}, err
+		}
+
+		return tokens.Tokens{}, err
+	}
+
+	return s.createSession(ctx, user.ID)
 }
 
-func (s *UsersService) RefreshTokens(ctx context.Context, refreshToken string) (tokens.Tokens, error) {
-	panic("implement me")
+func (s *Service) RefreshTokens(ctx context.Context, refreshToken string) (tokens.Tokens, error) {
+	user, err := s.repo.GetByRefreshToken(ctx, refreshToken)
+	if err != nil {
+		return tokens.Tokens{}, err
+	}
+
+	return s.createSession(ctx, user.ID)
 }
 
-func (s *UsersService) Verify(ctx context.Context, userID primitive.ObjectID, hash string) error {
-	panic("implement me")
+func (s *Service) Verify(ctx context.Context, userID primitive.ObjectID, hash string) error {
+	err := s.repo.Verify(ctx, userID, hash)
+	if err != nil {
+		if errors.Is(err, domain.ErrVerificationCodeInvalid) {
+			return err
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) createSession(ctx context.Context, userId primitive.ObjectID) (tokens.Tokens, error) {
+	var (
+		res tokens.Tokens
+		err error
+	)
+
+	res.AccessToken, err = s.tokenManager.NewJWT(userId.Hex(), s.accessTokenTTL)
+	if err != nil {
+		return res, err
+	}
+
+	res.RefreshToken, err = s.tokenManager.NewRefreshToken()
+	if err != nil {
+		return res, err
+	}
+
+	session := domain.Session{
+		RefreshToken: res.RefreshToken,
+		ExpiresAt:    time.Now().Add(s.refreshTokenTTL),
+	}
+
+	err = s.repo.SetSession(ctx, userId, session)
+
+	return res, err
 }

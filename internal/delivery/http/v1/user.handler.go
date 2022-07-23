@@ -13,6 +13,7 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	{
 		users.POST("/register", h.register)
 		users.POST("/login", h.login)
+		users.POST("/auth/refresh", h.userRefresh)
 
 		authenticated := users.Group("/", h.userIdentity)
 		{
@@ -40,7 +41,7 @@ func (h *Handler) register(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Users.Register(c.Request.Context(), dto.UserRegister{
+	if err := h.services.User.Register(c.Request.Context(), dto.UserRegister{
 		Name:     inp.Name,
 		Email:    inp.Email,
 		Password: inp.Password,
@@ -77,7 +78,7 @@ func (h *Handler) login(c *gin.Context) {
 		return
 	}
 
-	res, err := h.services.Users.Login(c.Request.Context(), dto.UserLogin{
+	res, err := h.services.User.Login(c.Request.Context(), dto.UserLogin{
 		Email:    inp.Email,
 		Password: inp.Password,
 	})
@@ -127,7 +128,7 @@ func (h *Handler) userVerify(c *gin.Context) {
 		return
 	}
 
-	if err = h.services.Users.Verify(c.Request.Context(), id, code); err != nil {
+	if err = h.services.User.Verify(c.Request.Context(), id, code); err != nil {
 		if errors.Is(err, domain.ErrVerificationCodeInvalid) {
 			newResponse(c, http.StatusBadRequest, err.Error())
 
@@ -140,4 +141,36 @@ func (h *Handler) userVerify(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response{"success"})
+}
+
+// @Summary User Refresh Tokens
+// @Tags auth
+// @Description user refresh tokens
+// @Accept  json
+// @Produce  json
+// @Param input body dto.RefreshToken true "register info"
+// @Success 200 {object} dto.TokenResponse
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /api/v1/user/refresh [post]
+func (h *Handler) userRefresh(c *gin.Context) {
+	var inp dto.RefreshToken
+	if err := c.BindJSON(&inp); err != nil {
+		newResponse(c, http.StatusBadRequest, "Invalid input body")
+
+		return
+	}
+
+	res, err := h.services.User.RefreshTokens(c.Request.Context(), inp.Token)
+	if err != nil {
+		newResponse(c, http.StatusInternalServerError, err.Error())
+
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.TokenResponse{
+		AccessToken:  res.AccessToken,
+		RefreshToken: res.RefreshToken,
+	})
 }
