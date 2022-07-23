@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/IgorKravtsov/esport_server_go/internal/server"
+	"github.com/IgorKravtsov/esport_server_go/pkg/otp"
 	"github.com/joho/godotenv"
 	"net/http"
 	"os"
@@ -80,7 +81,7 @@ func Run(configPath string) {
 		return
 	}
 
-	//otpGenerator := otp.NewGOTPGenerator()
+	otpGenerator := otp.NewGOTPGenerator()
 	//
 	//storageProvider, err := newStorageProvider(cfg)
 	//if err != nil {
@@ -109,12 +110,12 @@ func Run(configPath string) {
 		VerificationCodeLength: cfg.Auth.VerificationCodeLength,
 		Environment:            cfg.Environment,
 		Domain:                 cfg.HTTP.Host,
+		OtpGenerator:           otpGenerator,
 		//Cache:                  memCache,
 		//EmailSender:            emailSender,
 		//EmailConfig:            cfg.Email,
 		//FondyCallbackURL:       cfg.Payment.FondyCallbackURL,
 		//CacheTTL: int64(cfg.CacheTTL.Seconds()),
-		//OtpGenerator:           otpGenerator,
 		//StorageProvider:        storageProvider,
 		//DNS:                    dnsService,
 	})
@@ -144,11 +145,11 @@ func Run(configPath string) {
 	ctx, shutdown := context.WithTimeout(context.Background(), timeout)
 	defer shutdown()
 
-	if err := srv.Stop(ctx); err != nil {
+	if err = srv.Stop(ctx); err != nil {
 		logger.Errorf("failed to stop server: %v", err)
 	}
 
-	if err := mongoClient.Disconnect(context.Background()); err != nil {
+	if err = mongoClient.Disconnect(context.Background()); err != nil {
 		logger.Error(err.Error())
 	}
 }

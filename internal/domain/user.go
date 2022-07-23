@@ -13,6 +13,6 @@ type User struct {
 	Password     string             `json:"password" bson:"password"`
 	RegisteredAt time.Time          `json:"registeredAt" bson:"registeredAt"`
 	LastVisitAt  time.Time          `json:"lastVisitAt" bson:"lastVisitAt"`
-	//Verification Verification         `json:"verification" bson:"verification"`
+	Verification Verification       `json:"verification" bson:"verification"`
 	//Schools []primitive.ObjectID `json:"schools" bson:"schools"`
 }

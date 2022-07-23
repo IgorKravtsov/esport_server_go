@@ -19,7 +19,7 @@ type User interface {
 	GetByCredentials(ctx context.Context, email, password string) (domain.User, error)
 	GetByRefreshToken(ctx context.Context, refreshToken string) (domain.User, error)
 	Verify(ctx context.Context, userID primitive.ObjectID, code string) error
-	//SetSession(ctx context.Context, userID primitive.ObjectID, session domain.Session) error
+	SetSession(ctx context.Context, userID primitive.ObjectID, session domain.Session) error
 	//AttachSchool(ctx context.Context, userID, schoolID primitive.ObjectID) error
 }
 
@@ -86,11 +86,12 @@ func (r *UserRepo) Verify(ctx context.Context, userID primitive.ObjectID, code s
 	return nil
 }
 
-//func (r *UserRepo) SetSession(ctx context.Context, userID primitive.ObjectID, session domain.Session) error {
-//  _, err := r.db.UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$set": bson.M{"session": session, "lastVisitAt": time.Now()}})
-//
-//  return err
-//}
+func (r *UserRepo) SetSession(ctx context.Context, userID primitive.ObjectID, session domain.Session) error {
+	_, err := r.db.UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$set": bson.M{"session": session, "lastVisitAt": time.Now()}})
+
+	return err
+}
+
 //
 //func (r *UserRepo) AttachSchool(ctx context.Context, userID, schoolId primitive.ObjectID) error {
 //  _, err := r.db.UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$push": bson.M{"schools": schoolId}})

@@ -5,6 +5,7 @@ import (
 	"github.com/IgorKravtsov/esport_server_go/internal/service/user"
 	"github.com/IgorKravtsov/esport_server_go/pkg/auth"
 	"github.com/IgorKravtsov/esport_server_go/pkg/hash"
+	"github.com/IgorKravtsov/esport_server_go/pkg/otp"
 	"time"
 )
 
@@ -22,26 +23,26 @@ type Services struct {
 	//Orders         Orders
 	//Admins         Admins
 	//Files          Files
-	Users user.Users
+	User user.User
 	//Surveys        Surveys
 }
 
 type Deps struct {
-	Repos *repository.Repositories
-	//Cache                  cache.Cache
-	Hasher       hash.PasswordHasher
-	TokenManager auth.TokenManager
-	//EmailSender            email.Sender
-	//EmailConfig            configs.EmailConfig
-	//StorageProvider        storage.Provider
-	AccessTokenTTL   time.Duration
-	RefreshTokenTTL  time.Duration
-	FondyCallbackURL string
-	CacheTTL         int64
-	//OtpGenerator           otp.Generator
+	Repos                  *repository.Repositories
+	Hasher                 hash.PasswordHasher
+	TokenManager           auth.TokenManager
+	AccessTokenTTL         time.Duration
+	RefreshTokenTTL        time.Duration
+	FondyCallbackURL       string
+	CacheTTL               int64
+	OtpGenerator           otp.Generator
 	VerificationCodeLength int
 	Environment            string
 	Domain                 string
+	//Cache                  cache.Cache
+	//EmailSender            email.Sender
+	//EmailConfig            configs.EmailConfig
+	//StorageProvider        storage.Provider
 	//DNS                    dns.DomainManager
 }
 
@@ -58,8 +59,8 @@ func NewServices(deps Deps) *Services {
 	//studentsService := NewStudentsService(deps.Repos.Students, modulesService, offersService, lessonsService, deps.Hasher,
 	//  deps.TokenManager, emailsService, studentLessonsService, deps.AccessTokenTTL, deps.RefreshTokenTTL, deps.OtpGenerator, deps.VerificationCodeLength)
 	//ordersService := NewOrdersService(deps.Repos.Orders, offersService, promoCodesService, studentsService)
-	usersService := user.NewUsersService(deps.Repos.User, deps.Hasher, deps.TokenManager,
-		deps.AccessTokenTTL, deps.RefreshTokenTTL, deps.VerificationCodeLength, deps.Domain)
+	userService := user.NewUserService(deps.Repos.User, deps.Hasher, deps.TokenManager,
+		deps.AccessTokenTTL, deps.RefreshTokenTTL, deps.VerificationCodeLength, deps.Domain, deps.OtpGenerator)
 
 	return &Services{
 		//Schools:        schoolsService,
@@ -77,7 +78,7 @@ func NewServices(deps Deps) *Services {
 		//Packages: packagesService,
 		//Lessons:  lessonsService,
 		//Files:    NewFilesService(deps.Repos.Files, deps.StorageProvider, deps.Environment),
-		Users: usersService,
+		User: userService,
 		//Surveys:  NewSurveysService(deps.Repos.Modules, deps.Repos.SurveyResults, deps.Repos.Students),
 	}
 }

@@ -1,4 +1,11 @@
 definitions:
+  dto.RefreshToken:
+    properties:
+      token:
+        type: string
+    required:
+      - token
+    type: object
   dto.TokenResponse:
     properties:
       accessToken:
@@ -81,6 +88,44 @@ paths:
           schema:
             $ref: '#/definitions/v1.response'
       summary: Learner Login
+      tags:
+        - auth
+  /api/v1/user/refresh:
+    post:
+      consumes:
+        - application/json
+      description: user refresh tokens
+      parameters:
+        - description: register info
+          in: body
+          name: input
+          required: true
+          schema:
+            $ref: '#/definitions/dto.RefreshToken'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: User Refresh Tokens
       tags:
         - auth
   /api/v1/user/register:
