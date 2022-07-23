@@ -27,7 +27,7 @@ type Dto struct {
 }
 
 type UsersService struct {
-	repo         repository.Users
+	repo         repository.User
 	hasher       hash.PasswordHasher
 	tokenManager auth.TokenManager
 	//otpGenerator otp.Generator
@@ -44,7 +44,7 @@ type UsersService struct {
 }
 
 func NewUsersService(
-	repo repository.Users, hasher hash.PasswordHasher,
+	repo repository.User, hasher hash.PasswordHasher,
 	tokenManager auth.TokenManager,
 	accessTTL, refreshTTL time.Duration,
 	verificationCodeLength int, domain string) *UsersService {

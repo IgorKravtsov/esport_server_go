@@ -58,7 +58,7 @@ func NewServices(deps Deps) *Services {
 	//studentsService := NewStudentsService(deps.Repos.Students, modulesService, offersService, lessonsService, deps.Hasher,
 	//  deps.TokenManager, emailsService, studentLessonsService, deps.AccessTokenTTL, deps.RefreshTokenTTL, deps.OtpGenerator, deps.VerificationCodeLength)
 	//ordersService := NewOrdersService(deps.Repos.Orders, offersService, promoCodesService, studentsService)
-	usersService := user.NewUsersService(deps.Repos.Users, deps.Hasher, deps.TokenManager,
+	usersService := user.NewUsersService(deps.Repos.User, deps.Hasher, deps.TokenManager,
 		deps.AccessTokenTTL, deps.RefreshTokenTTL, deps.VerificationCodeLength, deps.Domain)
 
 	return &Services{

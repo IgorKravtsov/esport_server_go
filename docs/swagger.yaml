@@ -1,0 +1,163 @@
+definitions:
+  dto.TokenResponse:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+    type: object
+  dto.UserLogin:
+    properties:
+      email:
+        maxLength: 64
+        type: string
+      password:
+        maxLength: 64
+        minLength: 1
+        type: string
+    required:
+      - email
+      - password
+    type: object
+  dto.UserRegister:
+    properties:
+      email:
+        maxLength: 63
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      password:
+        maxLength: 64
+        minLength: 1
+        type: string
+    required:
+      - email
+      - name
+      - password
+    type: object
+  v1.response:
+    properties:
+      message:
+        type: string
+    type: object
+info:
+  contact: { }
+paths:
+  /api/v1/user/login:
+    post:
+      consumes:
+        - application/json
+      description: user sign in
+      parameters:
+        - description: login info
+          in: body
+          name: input
+          required: true
+          schema:
+            $ref: '#/definitions/dto.UserLogin'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Learner Login
+      tags:
+        - auth
+  /api/v1/user/register:
+    post:
+      consumes:
+        - application/json
+      description: create user account
+      parameters:
+        - description: register info
+          in: body
+          name: input
+          required: true
+          schema:
+            $ref: '#/definitions/dto.UserRegister'
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: User Register
+      tags:
+        - auth
+  /api/v1/user/verify/{code}:
+    post:
+      consumes:
+        - application/json
+      description: user verify registration
+      parameters:
+        - description: verification code
+          in: path
+          name: code
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+        - UserAuth: [ ]
+      summary: User Verify Registration
+      tags:
+        - auth
+swagger: "2.0"

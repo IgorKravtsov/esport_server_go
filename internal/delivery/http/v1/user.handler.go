@@ -21,36 +21,20 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	}
 }
 
-type registerInput struct {
-	Name     string `json:"name" binding:"required,min=1,max=64"`
-	Email    string `json:"email" binding:"required,email,max=63"`
-	Password string `json:"password" binding:"required,min=1,max=64"`
-}
-
-type loginInput struct {
-	Email    string `json:"email" binding:"required,email,max=64"`
-	Password string `json:"password" binding:"required,min=1,max=64"`
-}
-
-type tokenResponse struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
-}
-
 // @Summary User Register
 // @Tags auth
 // @Description create user account
 // @ModuleID register
 // @Accept  json
 // @Produce  json
-// @Param input body registerInput true "register info"
+// @Param input body dto.UserRegister true "register info"
 // @Success 201 {string} string "ok"
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
 // @Router /api/v1/user/register [post]
 func (h *Handler) register(c *gin.Context) {
-	var inp registerInput
+	var inp dto.UserRegister
 	if err := c.BindJSON(&inp); err != nil {
 		newResponse(c, http.StatusBadRequest, "Invalid input body")
 		return
@@ -79,14 +63,14 @@ func (h *Handler) register(c *gin.Context) {
 // @ModuleID login
 // @Accept  json
 // @Produce  json
-// @Param input body loginInput true "login info"
-// @Success 200 {object} tokenResponse
+// @Param input body dto.UserLogin true "login info"
+// @Success 200 {object} dto.TokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
 // @Router /api/v1/user/login [post]
 func (h *Handler) login(c *gin.Context) {
-	var inp loginInput
+	var inp dto.UserLogin
 	if err := c.BindJSON(&inp); err != nil {
 		newResponse(c, http.StatusBadRequest, "invalid input body")
 
@@ -109,7 +93,7 @@ func (h *Handler) login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, tokenResponse{
+	c.JSON(http.StatusOK, dto.TokenResponse{
 		AccessToken:  res.AccessToken,
 		RefreshToken: res.RefreshToken,
 	})
@@ -123,7 +107,7 @@ func (h *Handler) login(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param code path string true "verification code"
-// @Success 200 {object} tokenResponse
+// @Success 200 {object} dto.TokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
