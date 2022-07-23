@@ -12,7 +12,6 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	users := api.Group("/user")
 	{
 		users.POST("/register", h.register)
-		users.GET("/get", h.get)
 
 		authenticated := users.Group("/", h.userIdentity)
 		{
@@ -103,9 +102,5 @@ func (h *Handler) userVerify(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response{"success"})
-}
-
-func (h *Handler) get(c *gin.Context) {
 	c.JSON(http.StatusOK, response{"success"})
 }
