@@ -74,7 +74,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/refresh": {
+        "/api/v1/user/refresh-tokens": {
             "post": {
                 "description": "user refresh tokens",
                 "consumes": [

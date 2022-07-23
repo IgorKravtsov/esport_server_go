@@ -90,7 +90,7 @@ paths:
       summary: Learner Login
       tags:
         - auth
-  /api/v1/user/refresh:
+  /api/v1/user/refresh-tokens:
     post:
       consumes:
         - application/json

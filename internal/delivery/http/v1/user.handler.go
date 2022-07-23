@@ -13,7 +13,7 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	{
 		users.POST("/register", h.register)
 		users.POST("/login", h.login)
-		users.POST("/auth/refresh", h.userRefresh)
+		users.POST("/auth/refresh-tokens", h.userRefresh)
 
 		authenticated := users.Group("/", h.userIdentity)
 		{
@@ -153,7 +153,7 @@ func (h *Handler) userVerify(c *gin.Context) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /api/v1/user/refresh [post]
+// @Router /api/v1/user/refresh-tokens [post]
 func (h *Handler) userRefresh(c *gin.Context) {
 	var inp dto.RefreshToken
 	if err := c.BindJSON(&inp); err != nil {
