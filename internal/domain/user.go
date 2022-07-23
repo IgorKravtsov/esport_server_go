@@ -13,5 +13,5 @@ type User struct {
 	RegisteredAt time.Time    `json:"registeredAt" bson:"registeredAt"`
 	LastVisitAt  time.Time    `json:"lastVisitAt" bson:"lastVisitAt"`
 	Verification Verification `json:"verification" bson:"verification"`
-	//Schools []primitive.ObjectID `json:"schools" bson:"schools"`
+	Trainers     []string     `json:"trainers" bson:"trainers"`
 }
