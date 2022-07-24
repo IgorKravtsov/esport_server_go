@@ -12,7 +12,7 @@ const gymsCollection = "gyms"
 
 // Gym interface
 type Gym interface {
-	Create(ctx context.Context, user domain.Gym) error
+	Create(ctx context.Context, user domain.Gym) (string, error)
 	//GetByCredentials(ctx context.Context, email, password string) (domain.User, error)
 	//GetByRefreshToken(ctx context.Context, refreshToken string) (domain.User, error)
 	//Verify(ctx context.Context, userID primitive.ObjectID, code string) error
@@ -30,15 +30,19 @@ func NewGymRepo(db *mongo.Database) *GymRepo {
 	}
 }
 
-func (r *GymRepo) Create(ctx context.Context, g domain.Gym) error {
+func (r *GymRepo) Create(ctx context.Context, g domain.Gym) (string, error) {
 	mongoGym, err := mongodb_utils.GymToRepo(g)
 	if err != nil {
-		return err
+		return "", err
 	}
-	_, err = r.db.InsertOne(ctx, mongoGym)
+	insertResult, err := r.db.InsertOne(ctx, mongoGym)
 	if mongodb.IsDuplicate(err) {
-		return domain.ErrorAlreadyExitsts(gymsCollection)
+		return "", domain.ErrorAlreadyExitsts(gymsCollection)
+	}
+	oid, err := mongodb_utils.ConvertToObjID(insertResult.InsertedID)
+	if err != nil {
+		return "", err
 	}
 
-	return err
+	return oid.Hex(), nil
 }

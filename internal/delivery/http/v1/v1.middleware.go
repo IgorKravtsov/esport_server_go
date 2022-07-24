@@ -50,7 +50,7 @@ func (h *Handler) parseAuthHeader(c *gin.Context) (string, error) {
 func (h *Handler) authIdentity(c *gin.Context) {
 	id, err := h.parseAuthHeader(c)
 	if err != nil {
-		newResponse(c, http.StatusUnauthorized, err.Error())
+		newErrResponse(c, http.StatusUnauthorized, err.Error())
 	}
 
 	c.Set(userCtx, id)
@@ -59,7 +59,7 @@ func (h *Handler) authIdentity(c *gin.Context) {
 func (h *Handler) trainerIdentity(c *gin.Context) {
 	id, err := h.parseAuthHeader(c)
 	if err != nil {
-		newResponse(c, http.StatusUnauthorized, err.Error())
+		newErrResponse(c, http.StatusUnauthorized, err.Error())
 	}
 
 	c.Set(trainerCtx, id)
@@ -68,7 +68,7 @@ func (h *Handler) trainerIdentity(c *gin.Context) {
 func (h *Handler) adminIdentity(c *gin.Context) {
 	id, err := h.parseAuthHeader(c)
 	if err != nil {
-		newResponse(c, http.StatusUnauthorized, err.Error())
+		newErrResponse(c, http.StatusUnauthorized, err.Error())
 	}
 
 	c.Set(adminCtx, id)

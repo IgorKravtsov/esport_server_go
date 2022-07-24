@@ -21,7 +21,7 @@ type Verification struct {
 
 // User interface
 type User interface {
-	Create(ctx context.Context, user domain.User) error
+	Create(ctx context.Context, user domain.User) (string, error)
 	GetByCredentials(ctx context.Context, email, password string) (domain.User, error)
 	GetByRefreshToken(ctx context.Context, refreshToken string) (domain.User, error)
 	Verify(ctx context.Context, userID string, code string) error
@@ -40,17 +40,21 @@ func NewUserRepo(db *mongo.Database) *UserRepo {
 	}
 }
 
-func (r *UserRepo) Create(ctx context.Context, u domain.User) error {
+func (r *UserRepo) Create(ctx context.Context, u domain.User) (string, error) {
 	user, err := mongodb_utils.UserToRepo(u)
 	if err != nil {
-		return err
+		return "", err
 	}
-	_, err = r.db.InsertOne(ctx, user)
+	insertResult, err := r.db.InsertOne(ctx, user)
 	if mongodb.IsDuplicate(err) {
-		return domain.ErrUserAlreadyExists
+		return "", domain.ErrUserAlreadyExists
+	}
+	oid, err := mongodb_utils.ConvertToObjID(insertResult.InsertedID)
+	if err != nil {
+		return "", err
 	}
 
-	return err
+	return oid.Hex(), nil
 }
 
 func (r *UserRepo) GetByCredentials(ctx context.Context, email, password string) (domain.User, error) {

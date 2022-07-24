@@ -24,7 +24,7 @@ func (h *Handler) initGymsRoutes(api *gin.RouterGroup) {
 // @Accept  json
 // @Produce  json
 // @Param input body dto.CreateGym true "gym info"
-// @Success 201 {string} string "ok"
+// @Success 201 {object} idResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
@@ -32,26 +32,29 @@ func (h *Handler) initGymsRoutes(api *gin.RouterGroup) {
 func (h *Handler) createGym(c *gin.Context) {
 	id, err := getAdminId(c)
 	if err != nil {
-		newResponse(c, http.StatusInternalServerError, err.Error())
+		newErrResponse(c, http.StatusInternalServerError, err.Error())
 
 		return
 	}
 
 	var inp dto.CreateGym
 	if err = c.BindJSON(&inp); err != nil {
-		newResponse(c, http.StatusBadRequest, "Invalid input body")
+		newErrResponse(c, http.StatusBadRequest, "Invalid input body")
 
 		return
 	}
 
-	if err = h.services.Gym.Create(c.Request.Context(), dto.CreateGym{
+	ID, err := h.services.Gym.Create(c.Request.Context(), dto.CreateGym{
 		Title:   inp.Title,
 		Address: inp.Address,
-	}, id); err != nil {
-		newResponse(c, http.StatusInternalServerError, err.Error())
+	}, id)
+	if err != nil {
+		newErrResponse(c, http.StatusInternalServerError, err.Error())
 
 		return
 	}
 
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusCreated, idResponse{
+		ID: ID,
+	})
 }

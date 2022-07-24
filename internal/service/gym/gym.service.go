@@ -10,7 +10,7 @@ import (
 )
 
 type Gym interface {
-	Create(ctx context.Context, input dto.CreateGym, creatorID string) error
+	Create(ctx context.Context, input dto.CreateGym, creatorID string) (string, error)
 }
 
 type Service struct {
@@ -26,16 +26,17 @@ func NewGymService(
 	}
 }
 
-func (s Service) Create(ctx context.Context, input dto.CreateGym, creatorID string) error {
+func (s Service) Create(ctx context.Context, input dto.CreateGym, creatorID string) (string, error) {
 	gym := domain.Gym{
 		Title:     input.Title,
 		Address:   input.Address,
 		CreatedBy: creatorID,
 		CreatedAt: time.Now(),
 	}
-	if err := s.repo.Create(ctx, gym); err != nil {
-		return err
+	ID, err := s.repo.Create(ctx, gym)
+	if err != nil {
+		return "", err
 	}
 
-	return nil
+	return ID, nil
 }

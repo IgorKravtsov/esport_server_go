@@ -4,75 +4,12 @@
     "description": "REST API for eSport kit App",
     "title": "eSport kit",
     "contact": {},
-    "version": "1.3"
+    "version": "1.1"
   },
   "host": "localhost:5000",
   "basePath": "/api/v1/",
   "paths": {
-    "/gym/create": {
-      "post": {
-        "security": [
-          {
-            "AdminAuth": []
-          }
-        ],
-        "description": "creating a gym",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "gym"
-        ],
-        "summary": "Create Gym",
-        "parameters": [
-          {
-            "description": "gym info",
-            "name": "input",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.CreateGym"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "ok",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/v1.response"
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/v1.response"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/v1.response"
-            }
-          },
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/v1.response"
-            }
-          }
-        }
-      }
-    },
-    "/user/login": {
+    "/auth/login": {
       "post": {
         "description": "user sign in",
         "consumes": [
@@ -130,6 +67,127 @@
         }
       }
     },
+    "/auth/register": {
+      "post": {
+        "description": "create user account",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "summary": "User Register",
+        "parameters": [
+          {
+            "description": "register info",
+            "name": "input",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/dto.UserRegister"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/v1.idResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/v1.response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/v1.response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/v1.response"
+            }
+          },
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1.response"
+            }
+          }
+        }
+      }
+    },
+    "/gym/create": {
+      "post": {
+        "security": [
+          {
+            "AdminAuth": []
+          }
+        ],
+        "description": "creating a gym",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "gym"
+        ],
+        "summary": "Create Gym",
+        "parameters": [
+          {
+            "description": "gym info",
+            "name": "input",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/dto.CreateGym"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/v1.idResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/v1.response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/v1.response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/v1.response"
+            }
+          },
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1.response"
+            }
+          }
+        }
+      }
+    },
     "/user/refresh-tokens": {
       "post": {
         "description": "user refresh tokens",
@@ -140,7 +198,7 @@
           "application/json"
         ],
         "tags": [
-          "auth"
+          "user"
         ],
         "summary": "User Refresh Tokens",
         "parameters": [
@@ -188,64 +246,6 @@
         }
       }
     },
-    "/user/register": {
-      "post": {
-        "description": "create user account",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "auth"
-        ],
-        "summary": "User Register",
-        "parameters": [
-          {
-            "description": "register info",
-            "name": "input",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.UserRegister"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "ok",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/v1.response"
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/v1.response"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/v1.response"
-            }
-          },
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/v1.response"
-            }
-          }
-        }
-      }
-    },
     "/user/verify/{code}": {
       "post": {
         "security": [
@@ -261,7 +261,7 @@
           "application/json"
         ],
         "tags": [
-          "auth"
+          "user"
         ],
         "summary": "User Verify Registration",
         "parameters": [
@@ -386,6 +386,12 @@
           "maxLength": 64,
           "minLength": 1
         }
+      }
+    },
+    "v1.idResponse": {
+      "type": "object",
+      "properties": {
+        "id": {}
       }
     },
     "v1.response": {

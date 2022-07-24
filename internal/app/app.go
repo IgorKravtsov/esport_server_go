@@ -24,7 +24,7 @@ import (
 )
 
 // @title eSport kit
-// @version 1.3
+// @version 1.1
 // @description REST API for eSport kit App
 
 // @host localhost:5000

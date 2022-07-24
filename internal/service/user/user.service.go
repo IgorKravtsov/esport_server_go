@@ -16,7 +16,7 @@ import (
 )
 
 type User interface {
-	Register(ctx context.Context, input dto.UserRegister) error
+	Register(ctx context.Context, input dto.UserRegister) (string, error)
 	Login(ctx context.Context, input dto.UserLogin) (tokens.Tokens, error)
 	RefreshTokens(ctx context.Context, refreshToken string) (tokens.Tokens, error)
 	Verify(ctx context.Context, userID string, hash string) error
@@ -59,10 +59,10 @@ func NewUserService(
 	}
 }
 
-func (s *Service) Register(ctx context.Context, input dto.UserRegister) error {
+func (s *Service) Register(ctx context.Context, input dto.UserRegister) (string, error) {
 	passwordHash, err := s.hasher.Hash(input.Password)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	verificationCode := s.otpGenerator.RandomSecret(s.verificationCodeLength)
@@ -78,15 +78,16 @@ func (s *Service) Register(ctx context.Context, input dto.UserRegister) error {
 		},
 	}
 
-	if err = s.repo.Create(ctx, user); err != nil {
+	ID, err := s.repo.Create(ctx, user)
+	if err != nil {
 		if errors.Is(err, domain.ErrUserAlreadyExists) {
-			return err
+			return "", err
 		}
 
-		return err
+		return "", err
 	}
 
-	return nil
+	return ID, nil
 	// todo. DECIDE ON EMAIL MARKETING STRATEGY
 
 	//return s.emailService.SendUserVerificationEmail(VerificationEmailInput{
