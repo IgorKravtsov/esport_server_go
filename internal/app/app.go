@@ -24,21 +24,21 @@ import (
 )
 
 // @title eSport kit
-// @version 1.0
+// @version 1.3
 // @description REST API for eSport kit App
 
 // @host localhost:5000
 // @BasePath /api/v1/
+
+// @securityDefinitions.apikey UserAuth
+// @in header
+// @name Authorization
 
 // @securityDefinitions.apikey AdminAuth
 // @in header
 // @name Authorization
 
 // @securityDefinitions.apikey TrainerAuth
-// @in header
-// @name Authorization
-
-// @securityDefinitions.apikey UserAuth
 // @in header
 // @name Authorization
 

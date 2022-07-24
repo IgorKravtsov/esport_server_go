@@ -28,7 +28,7 @@ func (h *Handler) initGymsRoutes(api *gin.RouterGroup) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /api/v1/gym/create [post]
+// @Router /gym/create [post]
 func (h *Handler) createGym(c *gin.Context) {
 	id, err := getAdminId(c)
 	if err != nil {

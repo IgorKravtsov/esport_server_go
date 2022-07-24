@@ -1,0 +1,29 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "REST API for eSport kit App",
+    "title": "eSport kit",
+    "contact": {},
+    "version": "1.0"
+  },
+  "host": "localhost:5000",
+  "basePath": "/api/v1/",
+  "paths": {},
+  "securityDefinitions": {
+    "AdminAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    },
+    "TrainerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    },
+    "UserAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
+}

@@ -33,7 +33,7 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /api/v1/user/register [post]
+// @Router /user/register [post]
 func (h *Handler) register(c *gin.Context) {
 	var inp dto.UserRegister
 	if err := c.BindJSON(&inp); err != nil {
@@ -75,7 +75,7 @@ func (h *Handler) register(c *gin.Context) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /api/v1/user/login [post]
+// @Router /user/login [post]
 func (h *Handler) login(c *gin.Context) {
 	var inp dto.UserLogin
 	if err := c.BindJSON(&inp); err != nil {
@@ -118,7 +118,7 @@ func (h *Handler) login(c *gin.Context) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /api/v1/user/verify/{code} [post]
+// @Router /user/verify/{code} [post]
 func (h *Handler) userVerify(c *gin.Context) {
 	code := c.Param("code")
 	if code == "" {
@@ -159,7 +159,7 @@ func (h *Handler) userVerify(c *gin.Context) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /api/v1/user/refresh-tokens [post]
+// @Router /user/refresh-tokens [post]
 func (h *Handler) userRefresh(c *gin.Context) {
 	var inp dto.RefreshToken
 	if err := c.BindJSON(&inp); err != nil {

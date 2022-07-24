@@ -1,0 +1,22 @@
+basePath: /api/v1/
+host: localhost:5000
+info:
+  contact: { }
+  description: REST API for eSport kit App
+  title: eSport kit
+  version: "1.0"
+paths: { }
+securityDefinitions:
+  AdminAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  TrainerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  UserAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

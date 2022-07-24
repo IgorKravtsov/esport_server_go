@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/gym/create": {
+        "/gym/create": {
             "post": {
                 "security": [
                     {
@@ -79,7 +79,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/login": {
+        "/user/login": {
             "post": {
                 "description": "user sign in",
                 "consumes": [
@@ -137,7 +137,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/refresh-tokens": {
+        "/user/refresh-tokens": {
             "post": {
                 "description": "user refresh tokens",
                 "consumes": [
@@ -195,7 +195,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/register": {
+        "/user/register": {
             "post": {
                 "description": "create user account",
                 "consumes": [
@@ -253,7 +253,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/verify/{code}": {
+        "/user/verify/{code}": {
             "post": {
                 "security": [
                     {
@@ -403,17 +403,34 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "AdminAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "TrainerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "UserAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.3",
+	Host:             "localhost:5000",
+	BasePath:         "/api/v1/",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "eSport kit",
+	Description:      "REST API for eSport kit App",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }
